@@ -19,6 +19,7 @@ class Week(object):
         self.src_file = filename
         self.set_week_number()
         self.load_albums()
+        self.paginate()
 
     def set_week_number(self):
         matches = re.search(FILE_NAME_PATTERN, self.src_file)
@@ -50,7 +51,7 @@ class Week(object):
             prev_page = curr_page
             page_number += 1
 
-        return first_page
+        self.first_page = first_page
 
 
 class Page(object):
@@ -98,10 +99,20 @@ class HtmlGenerator(object):
     def __init__(self, week_list, dst_dir):
         self.week_list = week_list
         self.dst_dir = dst_dir
+        self.generate_toc()
 
         fp = codecs.open(self.TEMPLATE_NAME, 'r', encoding='utf-8')
         self.template = fp.read()
         fp.close()
+
+    def generate_toc(self):
+        toc = []
+        for week in self.week_list:
+            toc.append({
+                'weekNumber': week.week_number,
+                'path': week.first_page.get_path()
+            })
+        self.toc = toc
 
     def generate_all(self):
         for week in self.week_list:
@@ -125,7 +136,7 @@ class HtmlGenerator(object):
             if e.errno != errno.EEXIST:
                 raise
 
-        page = week.paginate()
+        page = week.first_page
         while page:
             if page.next_page:
                 next_link = page.next_page.filename
@@ -146,7 +157,7 @@ class HtmlGenerator(object):
                 'albums': page.albums,
                 'nextLink': next_link,
                 'prevLink': prev_link,
-                'weeks': [],
+                'toc': self.toc,
             }
 
             rendered_template = pystache.render(self.template, template_vars)
