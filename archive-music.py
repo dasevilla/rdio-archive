@@ -3,6 +3,7 @@ import json
 import os
 import os.path
 import re
+from datetime import date, timedelta
 
 import pystache
 
@@ -105,6 +106,16 @@ class HtmlGenerator(object):
         for week in self.week_list:
             self.generate_week(week)
 
+    def week_start_date(self, year, week):
+        d = date(year, 1, 1)
+        delta_days = d.isoweekday() - 1
+        delta_weeks = week
+        if year == d.isocalendar()[0]:
+            delta_weeks -= 1
+        delta = timedelta(days=-delta_days, weeks=delta_weeks)
+        day_delta = timedelta(days=1)
+        return d + delta + day_delta
+
     def generate_week(self, week):
         # Make the week's directory
         os.mkdir("%s/%s" % (self.dst_dir, week.get_path()))
@@ -121,10 +132,12 @@ class HtmlGenerator(object):
             else:
                 prev_link = None
 
+            start_date = self.week_start_date(2011, week.week_number)
+
             template_vars = {
                 'weekNumber': week.week_number,
                 'pageNumber': page.page_number,
-                'releaseDate': 'September 27, 2011',
+                'releaseDate': start_date.strftime("%B %d, %Y"),
                 'albums': page.albums,
                 'nextLink': next_link,
                 'prevLink': prev_link,
