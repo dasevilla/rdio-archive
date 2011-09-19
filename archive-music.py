@@ -4,6 +4,7 @@ import os
 import os.path
 import re
 from datetime import date, timedelta
+import errno
 
 import pystache
 
@@ -118,7 +119,11 @@ class HtmlGenerator(object):
 
     def generate_week(self, week):
         # Make the week's directory
-        os.mkdir("%s/%s" % (self.dst_dir, week.get_path()))
+        try:
+            os.mkdir("%s/%s" % (self.dst_dir, week.get_path()))
+        except OSError, e:
+            if e.errno != errno.EEXIST:
+                raise
 
         page = week.paginate()
         while page:
