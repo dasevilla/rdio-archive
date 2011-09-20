@@ -61,16 +61,5 @@ def get_new_releases():
         rdio_caller.save_result(filename, new_releases)
 
 
-def get_collections():
-    rdio_caller = RdioCaller()
-    users = ['s1070']
-    for user in users:
-        artist_collection = rdio_caller.get_collection(user)
-
-        filename = 'data/collection-%s.json' % user
-        rdio_caller.save_result(filename, artist_collection)
-
-
 if __name__ == "__main__":
     get_new_releases()
-    # get_collections()
