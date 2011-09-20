@@ -50,7 +50,10 @@ def get_new_releases():
     for time_frame in time_frames:
         new_releases = rdio_caller.get_new_releases(time_frame)
 
-        weeknumber = date.today().isocalendar()[1]
+        today = date.today()
+        weeknumber = today.isocalendar()[1]
+        if today.weekday() == 0:
+            weeknumber -= 1
 
         if time_frame == 'lastweek':
             weeknumber -= 1
