@@ -27,8 +27,8 @@ class RdioCaller:
         storage = []
         start = 0
         result = []
-        result_size = 1
-        while result_size > 0:
+        result_size = 0
+        while True:
             storage.extend(result)
 
             start += result_size
@@ -36,6 +36,8 @@ class RdioCaller:
             args['count'] = self.ITEMS_PER_REQUEST
             result = rdio_fn(**args)
             result_size = len(result)
+            if result_size <= 0:
+                break
 
         return storage
 
