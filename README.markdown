@@ -13,11 +13,16 @@ Setup
         git clone git://github.com/dasevilla/rdio-archive.git
         cd rdio-archive/
 
-2. Download the new releases for this week, last week, and two weeks ago
+2. Create a file called `rdioconfig.py` and add your Rdio API key
+
+        CONSUMER_KEY = 'RDIO_API_KEY'
+        CONSUMER_SECRET = 'RDIO_API_SECRET'
+
+3. Download the new releases for this week, last week, and two weeks ago
 
         make download
-    
-3. Build the site
+
+4. Build the site
 
         make site
         cd _generated/
