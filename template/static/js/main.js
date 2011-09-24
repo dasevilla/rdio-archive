@@ -91,6 +91,6 @@ $(function () {
     };
 
     $(".album-link").popover(popoverSettings).click(function(e) {
-        e.preventDefault();
     });
+
 });
