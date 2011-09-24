@@ -1,10 +1,13 @@
-.PHONEY: download site clean lint py-lint js-lint
+.PHONEY: download resources site clean lint py-lint js-lint
 
 download:
 	python rdio-downloader.py
 
-site:
+site: resources
 	python archive-music.py
+	cp -r template/static _generated/
+
+resources:
 	cp -r template/static _generated/
 
 clean:
