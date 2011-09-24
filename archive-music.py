@@ -114,6 +114,24 @@ class HtmlGenerator(object):
             })
         self.toc = toc
 
+    def generate_pagination(self, page):
+        if page.next_page:
+            next_link = page.next_page.filename
+        else:
+            next_link = None
+
+        if page.prev_page:
+            prev_link = page.prev_page.filename
+        else:
+            prev_link = None
+
+        pagination = {
+            'nextLink': next_link,
+            'prevLink': prev_link,
+        }
+
+        return pagination
+
     def generate_all(self):
         for week in self.week_list:
             self.generate_week(week)
@@ -138,15 +156,6 @@ class HtmlGenerator(object):
 
         page = week.first_page
         while page:
-            if page.next_page:
-                next_link = page.next_page.filename
-            else:
-                next_link = None
-
-            if page.prev_page:
-                prev_link = page.prev_page.filename
-            else:
-                prev_link = None
 
             start_date = self.week_start_date(2011, week.week_number)
 
@@ -154,9 +163,8 @@ class HtmlGenerator(object):
                 'weekNumber': week.week_number,
                 'pageNumber': page.page_number,
                 'releaseDate': start_date.strftime("%B %d, %Y"),
+                'pagination': self.generate_pagination(page),
                 'albums': page.albums,
-                'nextLink': next_link,
-                'prevLink': prev_link,
                 'toc': self.toc,
             }
 

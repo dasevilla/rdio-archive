@@ -28,18 +28,29 @@
                     <p>New music releases on Rdio for {{releaseDate}}</p>
                 </div>
 
-                <div id="top-pagination" class="row well">
-                    <div class="span4">
-                        <div class="pagination-links">
-                            {{#prevLink}}
-                            <a class="previous-pagination-link btn large" rel="prev" href="{{prevLink}}">Previous</a>
-                            {{/prevLink}}
-                            {{#nextLink}}
-                            <a class="next-pagination-link btn large" rel="next" href="{{nextLink}}">Next</a>
-                            {{/nextLink}}
+                {{#pagination}}
+                <div id="top-pagination" class="row">
+                    <div class="span16">
+                        <div class="pagination">
+                            <ul>
+                                {{#prevLink}}
+                                <li class="prev"><a rel="prev" href="{{prevLink}}">&larr; Previous</a></li>
+                                {{/prevLink}}
+                                {{^prevLink}}
+                                <li class="prev disabled"><a href="#">&larr; Previous</a></li>
+                                {{/prevLink}}
+
+                                {{#nextLink}}
+                                <li class="next"><a rel="next" href="{{nextLink}}">Next &rarr;</a></li>
+                                {{/nextLink}}
+                                {{^nextLink}}
+                                <li class="next disabled"><a href="#">Next &rarr;</a></li>
+                                {{/nextLink}}
+                            </ul>
                         </div>
                     </div>
                 </div>
+                {{/pagination}}
 
                 <div class="row">
                     <div class="span16">
@@ -59,19 +70,29 @@
                         </ul>
                     </div>
                 </div>
+                {{#pagination}}
+                <div id="bottom-pagination" class="row">
+                    <div class="span16">
+                        <div class="pagination">
+                            <ul>
+                                {{#prevLink}}
+                                <li class="prev"><a rel="prev" href="{{prevLink}}">&larr; Previous</a></li>
+                                {{/prevLink}}
+                                {{^prevLink}}
+                                <li class="prev disabled"><a href="#">&larr; Previous</a></li>
+                                {{/prevLink}}
 
-                <div id="bottom-pagination" class="row well">
-                    <div class="span4">
-                        <div class="pagination-links">
-                            {{#prevLink}}
-                            <a class="previous-pagination-link btn large" rel="prev" href="{{prevLink}}">Previous</a>
-                            {{/prevLink}}
-                            {{#nextLink}}
-                            <a class="next-pagination-link btn large" rel="next" href="{{nextLink}}">Next</a>
-                            {{/nextLink}}
+                                {{#nextLink}}
+                                <li class="next"><a rel="next" href="{{nextLink}}">Next &rarr;</a></li>
+                                {{/nextLink}}
+                                {{^nextLink}}
+                                <li class="next disabled"><a href="#">Next &rarr;</a></li>
+                                {{/nextLink}}
+                            </ul>
                         </div>
                     </div>
                 </div>
+                {{/pagination}}
 
                 <div class="row">
                     <div class="span16">
