@@ -15,7 +15,7 @@ Setup
 
 2. Download the new releases for this week, last week, and two weeks ago
 
-        make archive
+        make download
     
 3. Build the site
 

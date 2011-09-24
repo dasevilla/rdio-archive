@@ -1,6 +1,6 @@
-.PHONEY: archive site clean lint py-lint js-lint
+.PHONEY: download site clean lint py-lint js-lint
 
-archive:
+download:
 	python rdio-downloader.py
 
 site:
