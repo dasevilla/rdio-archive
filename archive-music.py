@@ -99,20 +99,21 @@ class HtmlGenerator(object):
     def __init__(self, week_list, dst_dir):
         self.week_list = week_list
         self.dst_dir = dst_dir
-        self.generate_toc()
 
         fp = codecs.open(self.TEMPLATE_NAME, 'r', encoding='utf-8')
         self.template = fp.read()
         fp.close()
 
-    def generate_toc(self):
+    def generate_toc(self, current_week):
         toc = []
         for week in self.week_list:
             toc.append({
                 'weekNumber': week.week_number,
-                'path': week.first_page.get_path()
+                'path': week.first_page.get_path(),
+                'currentWeek': current_week is week,
             })
-        self.toc = toc
+
+        return toc
 
     def generate_pagination(self, page):
         if page.next_page:
@@ -154,6 +155,7 @@ class HtmlGenerator(object):
             if e.errno != errno.EEXIST:
                 raise
 
+        toc = self.generate_toc(week)
         page = week.first_page
         while page:
 
@@ -165,7 +167,7 @@ class HtmlGenerator(object):
                 'releaseDate': start_date.strftime("%B %d, %Y"),
                 'pagination': self.generate_pagination(page),
                 'albums': page.albums,
-                'toc': self.toc,
+                'toc': toc,
             }
 
             rendered_template = pystache.render(self.template, template_vars)

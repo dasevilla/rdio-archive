@@ -94,16 +94,18 @@
                 </div>
                 {{/pagination}}
 
-                <div class="row">
+                <div class="row well">
                     <div class="span16">
                         <h4>Other weeks</h4>
-                        <ul id="week-list">
-                            {{#toc}}
-                            <li>
-                                <a href="../{{path}}" title="New music for week {{weekNumber}} on Rdio">{{weekNumber}}</a>
-                            </li>
-                            {{/toc}}
-                        </ul>
+                        <div class="pagination">
+                            <ul id="week-list">
+                                {{#toc}}
+                                <li class="{{#currentWeek}}active{{/currentWeek}}">
+                                    <a href="../{{path}}" title="New music for week {{weekNumber}} on Rdio">{{weekNumber}}</a>
+                                </li>
+                                {{/toc}}
+                            </ul>
+                        </div>
                     </div>
                 </div>
 
