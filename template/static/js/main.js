@@ -86,6 +86,7 @@ $(function () {
     var popoverSettings = {
         html: true,
         offset: 0,
+        placement: 'above',
         title: popoverTitle,
         content: popoverContent
     };
