@@ -8,6 +8,9 @@ import errno
 
 import pystache
 
+import rdioconfig
+import linkshare
+
 
 class Week(object):
     PAGE_SIZE = 40
@@ -62,11 +65,14 @@ class WeekLoader(object):
     FILE_NAME_PATTERN = 'music-(\d\d).json$'
 
     def __init__(self, src_dir):
+        self.linkshare_helper = linkshare.LinkShareHelper(
+            rdioconfig.LINKSHARE_TOKEN, rdioconfig.LINKSHARE_MERCHANT_ID)
         self.src_dir = src_dir
         self.week_list = []
         for src_filename in self.get_src_filenames():
             week_number = self.get_week_number(src_filename)
             albums = self.get_albums(src_filename)
+            self.pre_process_albums(albums)
             self.week_list.append(Week(week_number, albums))
 
     def get_src_filenames(self):
@@ -90,6 +96,16 @@ class WeekLoader(object):
     def get_albums(self, filename):
         fp = codecs.open(filename, 'r', encoding='utf-8')
         return json.load(fp)
+
+    def pre_process_albums(self, albums):
+        for album in albums:
+            album_url = 'http://www.rdio.com%s' % album['url']
+            album['url'] = self.linkshare_helper.generate_link_simple(
+                album_url)
+
+            artist_url = 'http://www.rdio.com%s' % album['artistUrl']
+            album['artistUrl'] = self.linkshare_helper.generate_link_simple(
+                artist_url)
 
 
 class HtmlGenerator(object):
