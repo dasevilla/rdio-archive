@@ -9,25 +9,13 @@ import errno
 import pystache
 
 
-FILE_NAME_PATTERN = 'music-(\d\d).json$'
-
-
 class Week(object):
     PAGE_SIZE = 40
 
-    def __init__(self, filename):
-        self.src_file = filename
-        self.set_week_number()
-        self.load_albums()
+    def __init__(self, week_number, albums):
+        self.week_number = week_number
+        self.albums = albums
         self.paginate()
-
-    def set_week_number(self):
-        matches = re.search(FILE_NAME_PATTERN, self.src_file)
-        self.week_number = int(matches.group(1))
-
-    def load_albums(self):
-        fp = codecs.open(self.src_file, 'r', encoding='utf-8')
-        self.albums = json.load(fp)
 
     def get_path(self):
         return "%s" % self.week_number
@@ -71,11 +59,15 @@ class Page(object):
 
 class WeekLoader(object):
 
+    FILE_NAME_PATTERN = 'music-(\d\d).json$'
+
     def __init__(self, src_dir):
         self.src_dir = src_dir
         self.week_list = []
         for src_filename in self.get_src_filenames():
-            self.week_list.append(Week(src_filename))
+            week_number = self.get_week_number(src_filename)
+            albums = self.get_albums(src_filename)
+            self.week_list.append(Week(week_number, albums))
 
     def get_src_filenames(self):
 
@@ -84,12 +76,20 @@ class WeekLoader(object):
                 subname = os.path.join(dirname, name)
                 if os.path.isdir(subname):
                     continue
-                elif re.search(FILE_NAME_PATTERN, name):
+                elif re.search(self.FILE_NAME_PATTERN, name):
                     src_filenames.append(subname)
 
         src_filenames = []
         os.path.walk(self.src_dir, visit_dir, src_filenames)
         return src_filenames
+
+    def get_week_number(self, filename):
+        matches = re.search(self.FILE_NAME_PATTERN, filename)
+        return int(matches.group(1))
+
+    def get_albums(self, filename):
+        fp = codecs.open(filename, 'r', encoding='utf-8')
+        return json.load(fp)
 
 
 class HtmlGenerator(object):
