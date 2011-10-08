@@ -5,6 +5,7 @@ import os.path
 import re
 from datetime import date, timedelta
 import errno
+import glob
 
 import pystache
 
@@ -63,12 +64,13 @@ class Page(object):
 class WeekLoader(object):
 
     FILE_NAME_PATTERN = 'music-(\d\d).json$'
+    FILE_NAME_GLOB = 'music-*.json'
 
-    def __init__(self, src_dir):
-        config = RdioConfig('config.ini')
+    def __init__(self, config):
+        self.config = config
         self.linkshare_helper = linkshare.LinkShareHelper(
-            config.get_linkshare_key(), config.get_linkshare_merchant_id())
-        self.src_dir = src_dir
+            self.config.get_linkshare_key(),
+            self.config.get_linkshare_merchant_id())
         self.week_list = []
         for src_filename in self.get_src_filenames():
             week_number = self.get_week_number(src_filename)
@@ -77,17 +79,9 @@ class WeekLoader(object):
             self.week_list.append(Week(week_number, albums))
 
     def get_src_filenames(self):
-
-        def visit_dir(src_filenames, dirname, names):
-            for name in names:
-                subname = os.path.join(dirname, name)
-                if os.path.isdir(subname):
-                    continue
-                elif re.search(self.FILE_NAME_PATTERN, name):
-                    src_filenames.append(subname)
-
-        src_filenames = []
-        os.path.walk(self.src_dir, visit_dir, src_filenames)
+        glob_pattern = os.path.join(self.config.get_downloader_path(),
+            self.FILE_NAME_GLOB)
+        src_filenames = glob.glob(glob_pattern)
         return src_filenames
 
     def get_week_number(self, filename):
@@ -198,6 +192,7 @@ class HtmlGenerator(object):
 
 
 if __name__ == "__main__":
-    loader = WeekLoader('data')
+    config = RdioConfig('config.ini')
+    loader = WeekLoader(config)
     generator = HtmlGenerator(loader.week_list, '_generated')
     generator.generate_all()
