@@ -2,7 +2,7 @@ import urllib
 import urlparse
 import logging
 
-import rdioconfig
+from rdioconfig import RdioConfig
 
 
 class LinkShareException(Exception):
@@ -72,10 +72,12 @@ class LinkShareHelper:
 
 
 def identical_test():
+    config = RdioConfig('config.ini')
+
     src_link = 'http://www.rdio.com/artist/Mastodon/album/The_Hunter/'
 
-    linkshare_helper = LinkShareHelper(rdioconfig.LINKSHARE_TOKEN,
-        rdioconfig.LINKSHARE_MERCHANT_ID)
+    linkshare_helper = LinkShareHelper(config.get_linkshare_key(),
+        config.get_linkshare_merchant_id())
 
     simple_link = linkshare_helper.generate_link_simple(src_link)
     link = linkshare_helper.generate_link(src_link)

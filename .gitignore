@@ -1,4 +1,4 @@
 .DS_Store
 _generated/
 *.pyc
-rdioconfig.py
+config.ini

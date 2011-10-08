@@ -3,7 +3,7 @@ import json
 
 from rdioapi import Rdio
 
-import rdioconfig
+from rdioconfig import RdioConfig
 
 
 class RdioHelper:
@@ -71,8 +71,8 @@ class RdioOptions:
 
 def main():
     from pprint import pprint
-
-    options = RdioOptions(rdioconfig.CONSUMER_KEY, rdioconfig.CONSUMER_SECRET)
+    config = RdioConfig('config.ini')
+    options = RdioOptions(config.get_rdio_key(), config.get_rdio_secret())
     # options.authenticate = True
     instance = RdioHelper(options)
     song = instance.getObjectFromShortCode('QE9MK29_fA')

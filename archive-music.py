@@ -8,7 +8,7 @@ import errno
 
 import pystache
 
-import rdioconfig
+from rdioconfig import RdioConfig
 import linkshare
 
 
@@ -65,8 +65,9 @@ class WeekLoader(object):
     FILE_NAME_PATTERN = 'music-(\d\d).json$'
 
     def __init__(self, src_dir):
+        config = RdioConfig('config.ini')
         self.linkshare_helper = linkshare.LinkShareHelper(
-            rdioconfig.LINKSHARE_TOKEN, rdioconfig.LINKSHARE_MERCHANT_ID)
+            config.get_linkshare_key(), config.get_linkshare_merchant_id())
         self.src_dir = src_dir
         self.week_list = []
         for src_filename in self.get_src_filenames():

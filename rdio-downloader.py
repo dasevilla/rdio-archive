@@ -3,17 +3,17 @@ import json
 from datetime import date
 
 from rdiohelper import RdioHelper, RdioOptions
-
-import rdioconfig
+from rdioconfig import RdioConfig
 
 
 class RdioCaller:
 
     ITEMS_PER_REQUEST = 500
 
-    def __init__(self):
-        options = RdioOptions(rdioconfig.CONSUMER_KEY,
-                rdioconfig.CONSUMER_SECRET)
+    def __init__(self, config):
+        self.config = config
+        options = RdioOptions(self.config.get_rdio_key(),
+                self.config.get_rdio_secret())
         self.rdio_helper = RdioHelper(options)
 
     def get_collection(self, user):
@@ -47,7 +47,8 @@ class RdioCaller:
 
 
 def get_new_releases():
-    rdio_caller = RdioCaller()
+    config = RdioConfig('config.ini')
+    rdio_caller = RdioCaller(config)
     time_frames = ['thisweek', 'lastweek', 'twoweeks']
     for time_frame in time_frames:
         new_releases = rdio_caller.get_new_releases(time_frame)
@@ -62,7 +63,8 @@ def get_new_releases():
         elif time_frame == 'twoweeks':
             weeknumber -= 2
 
-        filename = 'data/music-%02d.json' % weeknumber
+        filename = '%s/music-%02d.json' % (config.get_downloader_path(),
+            weeknumber)
         rdio_caller.save_result(filename, new_releases)
 
 
