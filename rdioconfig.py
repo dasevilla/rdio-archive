@@ -8,6 +8,7 @@ class RdioConfig:
     RDIO_SECTION_NAME = 'rdio'
     LINKSHARE_SECTION_NAME = 'linkshare'
     DOWNLOADER_SECTION_NAME = 'rdio-downloader'
+    ARCHIVER_SECTION_NAME = 'rdio-archive'
 
     def __init__(self, config_path):
         self.parser = SafeConfigParser()
@@ -29,6 +30,11 @@ class RdioConfig:
 
     def get_downloader_path(self):
         path_setting = self.parser.get(self.DOWNLOADER_SECTION_NAME,
+            'dest_path')
+        return os.path.abspath(os.path.expandvars(path_setting))
+
+    def get_archiver_path(self):
+        path_setting = self.parser.get(self.ARCHIVER_SECTION_NAME,
             'dest_path')
         return os.path.abspath(os.path.expandvars(path_setting))
 

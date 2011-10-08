@@ -107,9 +107,9 @@ class HtmlGenerator(object):
 
     TEMPLATE_NAME = 'template/archive-page.mustache'
 
-    def __init__(self, week_list, dst_dir):
+    def __init__(self, week_list, config):
+        self.config = config
         self.week_list = week_list
-        self.dst_dir = dst_dir
 
         fp = codecs.open(self.TEMPLATE_NAME, 'r', encoding='utf-8')
         self.template = fp.read()
@@ -159,9 +159,10 @@ class HtmlGenerator(object):
         return d + delta + day_delta
 
     def generate_week(self, week):
-        # Make the week's directory
+        full_path = os.path.join(self.config.get_archiver_path(),
+            week.get_path())
         try:
-            os.mkdir("%s/%s" % (self.dst_dir, week.get_path()))
+            os.mkdir(full_path)
         except OSError, e:
             if e.errno != errno.EEXIST:
                 raise
@@ -183,8 +184,9 @@ class HtmlGenerator(object):
 
             rendered_template = pystache.render(self.template, template_vars)
 
-            page_path = "%s/%s" % (self.dst_dir, page.get_path())
-            fp = codecs.open(page_path, 'w', encoding='utf-8')
+            full_path = os.path.join(self.config.get_archiver_path(),
+                page.get_path())
+            fp = codecs.open(full_path, 'w', encoding='utf-8')
             fp.write(rendered_template)
             fp.close()
 
@@ -194,5 +196,5 @@ class HtmlGenerator(object):
 if __name__ == "__main__":
     config = RdioConfig('config.ini')
     loader = WeekLoader(config)
-    generator = HtmlGenerator(loader.week_list, '_generated')
+    generator = HtmlGenerator(loader.week_list, config)
     generator.generate_all()
