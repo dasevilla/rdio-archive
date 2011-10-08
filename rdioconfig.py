@@ -1,5 +1,6 @@
 from ConfigParser import SafeConfigParser
 import codecs
+import os
 
 
 class RdioConfig:
@@ -27,7 +28,9 @@ class RdioConfig:
         return self.parser.get(self.LINKSHARE_SECTION_NAME, 'merchant_id')
 
     def get_downloader_path(self):
-        return self.parser.get(self.DOWNLOADER_SECTION_NAME, 'dest_path')
+        path_setting = self.parser.get(self.DOWNLOADER_SECTION_NAME,
+            'dest_path')
+        return os.path.abspath(os.path.expandvars(path_setting))
 
 
 if __name__ == '__main__':

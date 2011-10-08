@@ -1,6 +1,7 @@
 import codecs
 import json
 from datetime import date
+import os
 
 from rdiohelper import RdioHelper, RdioOptions
 from rdioconfig import RdioConfig
@@ -63,9 +64,10 @@ def get_new_releases():
         elif time_frame == 'twoweeks':
             weeknumber -= 2
 
-        filename = '%s/music-%02d.json' % (config.get_downloader_path(),
-            weeknumber)
-        rdio_caller.save_result(filename, new_releases)
+        dest_dir = config.get_downloader_path()
+        file_name = 'music-%02d.json' % weeknumber
+        abs_path = os.path.join(dest_dir, file_name)
+        rdio_caller.save_result(abs_path, new_releases)
 
 
 if __name__ == "__main__":
