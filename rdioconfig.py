@@ -39,6 +39,11 @@ class RdioConfig:
             'dest_path')
         return os.path.abspath(os.path.expandvars(path_setting))
 
+    def get_web_path(self):
+        path_setting = self.parser.get(self.ARCHIVER_SECTION_NAME,
+            'web_path')
+        return os.path.abspath(os.path.expandvars(path_setting))
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Get Rdio downloader options')
