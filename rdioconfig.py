@@ -1,4 +1,5 @@
 from ConfigParser import SafeConfigParser
+import argparse
 import codecs
 import os
 
@@ -40,15 +41,11 @@ class RdioConfig:
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Get Rdio downloader options')
+    parser.add_argument('value_name', action='store')
+    results = parser.parse_args()
+
     config = RdioConfig('config.ini')
 
-    print "Rdio section:"
-    print config.get_rdio_key()
-    print config.get_rdio_secret()
-
-    print "Rdio Downlaoder section:"
-    print config.get_downloader_path()
-
-    print "LinkShare section:"
-    print config.get_linkshare_key()
-    print config.get_linkshare_merchant_id()
+    config_func = getattr(config, results.value_name)
+    print config_func()
