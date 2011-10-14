@@ -89,8 +89,8 @@ class WeekLoader(object):
         return int(matches.group(1))
 
     def get_albums(self, filename):
-        fp = codecs.open(filename, 'r', encoding='utf-8')
-        return json.load(fp)
+        with codecs.open(filename, 'r', encoding='utf-8') as fp:
+            return json.load(fp)
 
     def pre_process_albums(self, albums):
         for album in albums:
@@ -111,9 +111,8 @@ class HtmlGenerator(object):
         self.config = config
         self.week_list = week_list
 
-        fp = codecs.open(self.TEMPLATE_NAME, 'r', encoding='utf-8')
-        self.template = fp.read()
-        fp.close()
+        with codecs.open(self.TEMPLATE_NAME, 'r', encoding='utf-8') as fp:
+            self.template = fp.read()
 
     def generate_toc(self, current_week):
         toc = []
@@ -186,9 +185,8 @@ class HtmlGenerator(object):
 
             full_path = os.path.join(self.config.get_archiver_path(),
                 page.get_path())
-            fp = codecs.open(full_path, 'w', encoding='utf-8')
-            fp.write(rendered_template)
-            fp.close()
+            with codecs.open(full_path, 'w', encoding='utf-8') as fp:
+                fp.write(rendered_template)
 
             page = page.next_page
 
