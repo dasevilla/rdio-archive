@@ -14,23 +14,49 @@ import linkshare
 
 
 class Week(object):
+    FILE_NAME_PATTERN = 'music-(\d\d).json$'
     PAGE_SIZE = 40
 
-    def __init__(self, week_number, albums):
-        self.week_number = week_number
-        self.albums = albums
-        self.paginate()
+    def __init__(self, filename, linkshare_helper):
+        self.filename = filename
+        self.linkshare_helper = linkshare_helper
+        self.week_number = self.get_week_number(filename)
 
     def get_path(self):
         return "%s" % self.week_number
 
+    def get_first_page_path(self):
+        return "%s/week-%02d-page-%02d.html" % (self.get_path(),
+            self.week_number, 1)
+
+    def get_albums(self, filename):
+        with codecs.open(filename, 'r', encoding='utf-8') as fp:
+            return json.load(fp)
+
+    def get_week_number(self, filename):
+        matches = re.search(self.FILE_NAME_PATTERN, filename)
+        return int(matches.group(1))
+
+    def pre_process_albums(self, albums):
+        for album in albums:
+            album_url = 'http://www.rdio.com%s' % album['url']
+            album['url'] = self.linkshare_helper.generate_link_simple(
+                album_url)
+
+            artist_url = 'http://www.rdio.com%s' % album['artistUrl']
+            album['artistUrl'] = self.linkshare_helper.generate_link_simple(
+                artist_url)
+
     def paginate(self):
+        albums = self.get_albums(self.filename)
+        self.pre_process_albums(albums)
+
         first_page = None
         prev_page = None
         page_number = 1
 
-        for page_start in range(0, len(self.albums), self.PAGE_SIZE):
-            album_subset = self.albums[page_start:page_start + self.PAGE_SIZE]
+        for page_start in range(0, len(albums), self.PAGE_SIZE):
+            album_subset = albums[page_start:page_start + self.PAGE_SIZE]
 
             curr_page = Page(prev_page, None, album_subset, page_number, self)
 
@@ -43,7 +69,7 @@ class Week(object):
             prev_page = curr_page
             page_number += 1
 
-        self.first_page = first_page
+        return first_page
 
 
 class Page(object):
@@ -63,44 +89,22 @@ class Page(object):
 
 class WeekLoader(object):
 
-    FILE_NAME_PATTERN = 'music-(\d\d).json$'
     FILE_NAME_GLOB = 'music-*.json'
 
     def __init__(self, config):
         self.config = config
-        self.linkshare_helper = linkshare.LinkShareHelper(
+        linkshare_helper = linkshare.LinkShareHelper(
             self.config.get_linkshare_key(),
             self.config.get_linkshare_merchant_id())
         self.week_list = []
         for src_filename in self.get_src_filenames():
-            week_number = self.get_week_number(src_filename)
-            albums = self.get_albums(src_filename)
-            self.pre_process_albums(albums)
-            self.week_list.append(Week(week_number, albums))
+            self.week_list.append(Week(src_filename, linkshare_helper))
 
     def get_src_filenames(self):
         glob_pattern = os.path.join(self.config.get_downloader_path(),
             self.FILE_NAME_GLOB)
         src_filenames = glob.glob(glob_pattern)
         return src_filenames
-
-    def get_week_number(self, filename):
-        matches = re.search(self.FILE_NAME_PATTERN, filename)
-        return int(matches.group(1))
-
-    def get_albums(self, filename):
-        with codecs.open(filename, 'r', encoding='utf-8') as fp:
-            return json.load(fp)
-
-    def pre_process_albums(self, albums):
-        for album in albums:
-            album_url = 'http://www.rdio.com%s' % album['url']
-            album['url'] = self.linkshare_helper.generate_link_simple(
-                album_url)
-
-            artist_url = 'http://www.rdio.com%s' % album['artistUrl']
-            album['artistUrl'] = self.linkshare_helper.generate_link_simple(
-                artist_url)
 
 
 class HtmlGenerator(object):
@@ -119,7 +123,7 @@ class HtmlGenerator(object):
         for week in self.week_list:
             toc.append({
                 'weekNumber': week.week_number,
-                'path': week.first_page.get_path(),
+                'path': week.get_first_page_path(),
                 'currentWeek': current_week is week,
             })
 
@@ -167,7 +171,7 @@ class HtmlGenerator(object):
                 raise
 
         toc = self.generate_toc(week)
-        page = week.first_page
+        page = week.paginate()
         while page:
 
             start_date = self.week_start_date(2011, week.week_number)
