@@ -1,5 +1,6 @@
 .PHONEY: download resources site clean lint py-lint js-lint
 
+GIT_PATH=$(shell python rdioconfig.py get_downloader_path)
 GEN_PATH=$(shell python rdioconfig.py get_archiver_path)
 WEB_PATH=$(shell python rdioconfig.py get_web_path)
 
@@ -15,6 +16,10 @@ resources:
 
 deploy:
 	cp -r $(GEN_PATH)/*  $(WEB_PATH)
+
+commit:
+	cd $(GIT_PATH) && git add .
+	cd $(GIT_PATH) && git commit -m "`date \"+%m/%j/%Y %R\"` import"
 
 clean:
 	- rm -r _generated/*
