@@ -19,7 +19,8 @@ deploy:
 
 commit:
 	cd $(GIT_PATH) && git add .
-	cd $(GIT_PATH) && git commit -m "`date \"+%m/%j/%Y %R\"` import"
+	cd $(GIT_PATH) && git commit -m "`date \"+%D %R\"` import"
+	cd $(GIT_PATH) && git push
 
 clean:
 	- rm -r _generated/*
