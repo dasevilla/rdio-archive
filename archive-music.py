@@ -198,5 +198,6 @@ class HtmlGenerator(object):
 if __name__ == "__main__":
     config = RdioConfig('config.ini')
     loader = WeekLoader(config)
-    generator = HtmlGenerator(loader.week_list, config)
+    sorted_week = sorted(loader.week_list, key=lambda week: week.week_number)
+    generator = HtmlGenerator(sorted_week, config)
     generator.generate_all()
