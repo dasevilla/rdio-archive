@@ -64,9 +64,16 @@ def get_new_releases():
         elif time_frame == 'twoweeks':
             weeknumber -= 2
 
+        year_number = today.isocalendar()[0]
+
         dest_dir = config.get_downloader_path()
+        year_dir = os.path.join(dest_dir, str(year_number))
+
+        if not os.path.exists(year_dir):
+            os.makedirs(year_dir)
+
         file_name = 'music-%02d.json' % weeknumber
-        abs_path = os.path.join(dest_dir, file_name)
+        abs_path = os.path.join(year_dir, file_name)
         rdio_caller.save_result(abs_path, new_releases)
 
 
