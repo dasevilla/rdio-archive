@@ -2,8 +2,8 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <link rel="stylesheet" href="../static/css/bootstrap.min.css">
-        <link href="../static/css/style.css" rel="stylesheet" type="text/css" media="all">
+        <link rel="stylesheet" href="../../static/css/bootstrap.min.css">
+        <link href="../../static/css/style.css" rel="stylesheet" type="text/css" media="all">
         <title>New music for week {{weekNumber}} &mdash; Page {{pageNumber}} &mdash; New Release Archive for Rdio&reg;</title>
         <meta content="Rdio albums released on {{releaseDate}} &mdash; page {{pageNumber}}" name="description">
     </head>
@@ -99,11 +99,26 @@
                         <h4>Other weeks</h4>
                         <div class="pagination">
                             <ul id="week-list">
-                                {{#toc}}
+                                {{#weekTOC}}
                                 <li class="{{#currentWeek}}active{{/currentWeek}}">
-                                    <a href="../{{path}}" title="New music for week {{weekNumber}} on Rdio">{{weekNumber}}</a>
+                                    <a href="../../{{path}}" title="New music for week {{weekNumber}} on Rdio">{{weekNumber}}</a>
                                 </li>
-                                {{/toc}}
+                                {{/weekTOC}}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row well">
+                    <div class="span16">
+                        <h4>Other years</h4>
+                        <div class="pagination">
+                            <ul id="year-list">
+                                {{#yearTOC}}
+                                <li class="{{#currentYear}}active{{/currentYear}}">
+                                    <a href="../../{{path}}" title="New music for {{year}} on Rdio">{{year}}</a>
+                                </li>
+                                {{/yearTOC}}
                             </ul>
                         </div>
                     </div>
@@ -112,9 +127,9 @@
             </div> <!-- /content -->
         </div> <!-- /container -->
 
-        <script src="../static/js/jquery-1.7.1.min.js"></script>
-        <script src="../static/js/bootstrap-twipsy.js"></script>
-        <script src="../static/js/bootstrap-popover.js"></script>
-        <script src="../static/js/main.js"></script>
+        <script src="../../static/js/jquery-1.7.1.min.js"></script>
+        <script src="../../static/js/bootstrap-twipsy.js"></script>
+        <script src="../../static/js/bootstrap-popover.js"></script>
+        <script src="../../static/js/main.js"></script>
     </body>
 </html>

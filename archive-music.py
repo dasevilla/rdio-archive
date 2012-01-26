@@ -14,16 +14,16 @@ import linkshare
 
 
 class Week(object):
-    FILE_NAME_PATTERN = 'music-(\d\d).json$'
+    FILE_NAME_PATTERN = '(\d\d\d\d)%smusic-(\d\d).json$' % os.sep
     PAGE_SIZE = 40
 
     def __init__(self, filename, linkshare_helper):
         self.filename = filename
         self.linkshare_helper = linkshare_helper
-        self.week_number = self.get_week_number(filename)
+        self.year, self.week_number = self.get_year_and_week_number(filename)
 
     def get_path(self):
-        return "%s" % self.week_number
+        return "%s/%s" % (self.year, self.week_number)
 
     def get_first_page_path(self):
         return "%s/week-%02d-page-%02d.html" % (self.get_path(),
@@ -33,9 +33,9 @@ class Week(object):
         with codecs.open(filename, 'r', encoding='utf-8') as fp:
             return json.load(fp)
 
-    def get_week_number(self, filename):
+    def get_year_and_week_number(self, filename):
         matches = re.search(self.FILE_NAME_PATTERN, filename)
-        return int(matches.group(1))
+        return int(matches.group(1)), int(matches.group(2))
 
     def pre_process_albums(self, albums):
         for album in albums:
@@ -89,7 +89,7 @@ class Page(object):
 
 class WeekLoader(object):
 
-    FILE_NAME_GLOB = 'music-*.json'
+    FILE_NAME_GLOB = '*/music-*.json'
 
     def __init__(self, config):
         self.config = config
@@ -99,6 +99,22 @@ class WeekLoader(object):
         self.week_list = []
         for src_filename in self.get_src_filenames():
             self.week_list.append(Week(src_filename, linkshare_helper))
+
+        year_dict = {}
+        for week in self.week_list:
+            if week.year not in year_dict:
+                year_dict[week.year] = (week.week_number,
+                    week.get_first_page_path())
+            else:
+                week_number, _ = year_dict[week.year]
+                if week.week_number < week_number:
+                    year_dict[week.year] = (week.week_number,
+                        week.get_first_page_path())
+
+        self.year_list = []
+        for year in sorted(year_dict.keys()):
+            _, path = year_dict[year]
+            self.year_list.append((year, path))
 
     def get_src_filenames(self):
         glob_pattern = os.path.join(self.config.get_downloader_path(),
@@ -111,20 +127,35 @@ class HtmlGenerator(object):
 
     TEMPLATE_NAME = 'template/archive-page.mustache'
 
-    def __init__(self, week_list, config):
+    def __init__(self, week_list, year_list, config):
         self.config = config
         self.week_list = week_list
+        self.year_list = year_list
 
         with codecs.open(self.TEMPLATE_NAME, 'r', encoding='utf-8') as fp:
             self.template = fp.read()
 
-    def generate_toc(self, current_week):
+    def generate_week_toc(self, current_week):
         toc = []
         for week in self.week_list:
+            if current_week.year == week.year:
+                toc.append({
+                    'year': week.year,
+                    'weekNumber': week.week_number,
+                    'path': week.get_first_page_path(),
+                    'currentWeek': current_week is week,
+                })
+
+        return toc
+
+    def generate_year_toc(self, current_week):
+        toc = []
+
+        for year, path in self.year_list:
             toc.append({
-                'weekNumber': week.week_number,
-                'path': week.get_first_page_path(),
-                'currentWeek': current_week is week,
+                'year': year,
+                'path': path,
+                'currentYear': current_week.year == year,
             })
 
         return toc
@@ -165,24 +196,27 @@ class HtmlGenerator(object):
         full_path = os.path.join(self.config.get_archiver_path(),
             week.get_path())
         try:
-            os.mkdir(full_path)
+            os.makedirs(full_path)
         except OSError, e:
             if e.errno != errno.EEXIST:
                 raise
 
-        toc = self.generate_toc(week)
+        week_toc = self.generate_week_toc(week)
+        year_toc = self.generate_year_toc(week)
         page = week.paginate()
         while page:
 
-            start_date = self.week_start_date(2011, week.week_number)
+            start_date = self.week_start_date(week.year, week.week_number)
 
             template_vars = {
+                'year': week.year,
                 'weekNumber': week.week_number,
                 'pageNumber': page.page_number,
                 'releaseDate': start_date.strftime("%B %d, %Y"),
                 'pagination': self.generate_pagination(page),
                 'albums': page.albums,
-                'toc': toc,
+                'weekTOC': week_toc,
+                'yearTOC': year_toc,
             }
 
             rendered_template = pystache.render(self.template, template_vars)
@@ -199,5 +233,5 @@ if __name__ == "__main__":
     config = RdioConfig('config.ini')
     loader = WeekLoader(config)
     sorted_week = sorted(loader.week_list, key=lambda week: week.week_number)
-    generator = HtmlGenerator(sorted_week, config)
+    generator = HtmlGenerator(sorted_week, loader.year_list, config)
     generator.generate_all()
