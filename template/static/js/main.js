@@ -42,17 +42,17 @@ $(function () {
         var $this = $(this);
         var response = '<h3 class="title">';
 
-        var titleAttr = getAttr($this, 'data-original-title');
+        var titleAttr = getAttr($this, 'data-original');
         if (titleAttr) {
             response += titleAttr;
         }
 
         if (getAttr($this, 'data-clean')) {
-            response += ' <span class="label success">Clean</span>';
+            response += ' <span class="label label-success">Clean</span>';
         }
 
         if (getAttr($this, 'data-explicit')) {
-            response += ' <span class="label important">Explicit</span>';
+            response += ' <span class="label label-important">Explicit</span>';
         }
 
         response += '</h3>';
@@ -84,9 +84,7 @@ $(function () {
     };
 
     var popoverSettings = {
-        html: true,
-        offset: 0,
-        placement: 'above',
+        placement: 'top',
         title: popoverTitle,
         content: popoverContent
     };

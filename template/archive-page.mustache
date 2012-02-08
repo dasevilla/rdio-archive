@@ -8,8 +8,8 @@
         <meta content="Rdio albums released on {{releaseDate}} &mdash; page {{pageNumber}}" name="description">
     </head>
     <body>
-        <div class="topbar">
-            <div class="fill">
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
                 <div class="container">
                     <a class="brand" href="#">New Release Archive for Rdio&reg;</a>
                     <ul class="nav">
@@ -30,7 +30,7 @@
 
                 {{#pagination}}
                 <div id="top-pagination" class="row">
-                    <div class="span16">
+                    <div class="span12">
                         <div class="pagination">
                             <ul>
                                 {{#prevLink}}
@@ -53,13 +53,13 @@
                 {{/pagination}}
 
                 <div class="row">
-                    <div class="span16">
-                        <ul id="album-list" class="media-grid">
+                    <div class="span12">
+                        <ul id="album-list" class="thumbnails">
                             {{#albums}}
-                            <li>
+                            <li class="span3">
                                 <a href="{{url}}"
-                                    class="album-link"
-                                    title="{{name}}" data-artist="{{artist}}"
+                                    class="album-link thumbnail"
+                                    data-original="{{name}}" data-artist="{{artist}}"
                                     {{#isClean}}data-clean="true"{{/isClean}}
                                     {{#isExplicit}}data-explicit="true"{{/isExplicit}}
                                     data-length="{{length}}" data-duration="{{duration}}">
@@ -72,7 +72,7 @@
                 </div>
                 {{#pagination}}
                 <div id="bottom-pagination" class="row">
-                    <div class="span16">
+                    <div class="span12">
                         <div class="pagination">
                             <ul>
                                 {{#prevLink}}
@@ -95,7 +95,7 @@
                 {{/pagination}}
 
                 <div class="row well">
-                    <div class="span16">
+                    <div class="span12">
                         <h4>Other weeks</h4>
                         <div class="pagination">
                             <ul id="week-list">
@@ -110,7 +110,7 @@
                 </div>
 
                 <div class="row well">
-                    <div class="span16">
+                    <div class="span12">
                         <h4>Other years</h4>
                         <div class="pagination">
                             <ul id="year-list">
@@ -128,7 +128,7 @@
         </div> <!-- /container -->
 
         <script src="../../static/js/jquery-1.7.1.min.js"></script>
-        <script src="../../static/js/bootstrap-twipsy.js"></script>
+        <script src="../../static/js/bootstrap-tooltip.js"></script>
         <script src="../../static/js/bootstrap-popover.js"></script>
         <script src="../../static/js/main.js"></script>
     </body>
